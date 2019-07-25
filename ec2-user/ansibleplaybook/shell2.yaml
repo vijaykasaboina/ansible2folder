@@ -1,0 +1,9 @@
+---
+ - hosts: localhost
+   tasks:
+    - name: ansible
+      shell: ls -lrt >tmp.txt
+      args:
+       chdir: /home/ec2-user/
+       executable: /bin/bash
+

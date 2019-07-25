@@ -1,0 +1,18 @@
+---
+ - hosts: ip-172-31-8-35.us-east-2.compute.internal
+   become: yes
+   tasks:
+    - name: create a directory
+      file:
+       path: /home/ec2-user/tester
+       state: directory
+    - name: copy file into localhost from remote server
+      synchronize:
+       src: /home/ec2-user/tester/
+       dest: /home/ec2-user/rani/
+       verify_host: no
+       mode: push
+      delegate_to: ip-172-31-14-40.us-east-2.compute.internal
+
+
+

@@ -1,0 +1,9 @@
+---
+ - hosts: localhost
+   tasks:
+    - name: create the file
+      command: touch shell.txt
+      args:
+       chdir: /home
+       creates: shell.txt
+

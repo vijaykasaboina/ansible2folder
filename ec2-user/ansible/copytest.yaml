@@ -1,0 +1,13 @@
+---
+- hosts: web
+  tasks:
+   - name: copy files
+     copy:
+      src: /home/ec2-user/rani/
+      dest: /home/ec2-user/anil/
+   - name:
+     synchronize:
+       src: /home/ec2-user/rani
+       dest: /home/ec2-user/raju
+       delegate_to: ip-172-31-8-35.us-east-2.compute.internal
+

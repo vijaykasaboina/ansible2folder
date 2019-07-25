@@ -1,0 +1,10 @@
+webapp:
+ path1: /home/rms/ysconfig_backup/
+ path2: /home/rms/ysconfig/
+ path3: /home/rms/.release/{{environ}}/ysconfig/ysconfig.tar.gz
+ path4: /home/rms/tmp/ysconfig/
+ path5: /home/rms/ysconfig/
+ 
+secondvar:
+ id: 2
+ name: two

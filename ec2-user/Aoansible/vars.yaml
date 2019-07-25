@@ -1,0 +1,7 @@
+webapp:
+ path1: /home/rms/ysconfig_backup
+ path2: /home/rms/ysconfig/
+
+secondvar:
+ id: 2
+ name: two

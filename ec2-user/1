@@ -1,0 +1,15 @@
+a=`crontab -l|grep -i "wait.sh"|cut -c 1`
+echo "${a}"
+currentTime=`date +%k%M`
+ls_crontab_disable()
+{
+tempTime=$1
+if [ $tempTime -lt 1256 && # -eq $a ];then
+echo "already added the comment to build_els.sh in the cronjob list"
+echo "add the comment to build_ela.sh"
+crontab -l|grep -i wait.sh| sed -i '/s/^/#/'|crontab -
+else 
+echo "the condition is wrong"
+fi
+}
+ls_crontab_disable $currentTime

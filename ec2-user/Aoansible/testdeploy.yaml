@@ -1,0 +1,45 @@
+---
+- hosts: localhost
+  become: yes
+  vars:
+   env1: "{{ environ }}"
+  tasks:
+   - name: create a release directory
+     file:
+      path: /home/rms/.release/$env1/scheduler-web
+      state: directory
+   - name: copy file from jenkins server to localpath
+     copy: 
+      src: /home/rms/anil/anil.war
+      dest: /home/rms/.release/$env1/scheduler-web
+   - name: delete temporary directory
+     file:
+      path: /home/rms/tmp/scheduler-web
+      state: absent
+   - name: created a /tmp directory
+     file:
+      path: /home/rms/tmp/scheduler-web
+      state: directory
+   - name: copy file from one folder to another folder
+     copy:
+      src: /home/rms/.release/$env1/scheduler-web/anil.war
+      dest: /home/rms/tmp/scheduler-web
+   - name: create directory
+     file:
+      path: /home/rms/scheduler-web
+      state: directory
+   - name: copy war file to deployment folder
+     copy:
+      src: /home/rms/tmp/scheduler-web/anil.war
+      dest: /home/rms/scheduler-web
+   - name: change the file permission of the file
+     file:
+      path: /home/rms/tmp/scheduler-web/anil.war
+      owner: ec2-user
+      group: ec2-user
+      mode: 0777
+     
+     
+   
+      
+     

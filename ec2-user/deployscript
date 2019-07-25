@@ -1,0 +1,201 @@
+#/bin/sh
+# log in to the recpysdbacs001 as rms
+username=rms
+echo "log into the recpysdbacs001 server"
+ssh ${username}@rcpylsdbacs001 <<EOF
+echo “check build_ela.sh cronjob is disable or not”
+a=`crontab -l|grep -i "wait.sh"|cut -c 1`
+echo "${a}"
+currentTime=`date +%k%M`
+ls_crontab_disable()
+{
+tempTime=$1
+if [ $tempTime -gt 2100 -a $tempTime -lt 2300 ]
+then
+echo "time condition is right so we disable the cronjob build_ela.sh"
+if [[ ${a} == "#" ]]
+then
+echo "Already added the comment to cronjon build_ela.sh"
+else
+echo "we are going to add the comment to build_ela.sh"
+crontab -l | sed '/^[^#].*build_ela.sh/s/^/#/' | crontab -
+fi
+else
+echo "the build is not started between 2030 to 2130 .please start the build between predefined time"
+fi
+}
+ls_crontab_disable $currentTime
+EOF
+
+
+echo "log into the rcpylswwacs001,002 servers and stop tomcat"
+hostnames=( rcpylswwacs001 rcpylswwacs002 )
+for hostname in ${hostnames[@]}
+do
+ssh ${username}@${hostname} <<EOF
+cd /opt/tomcat/bin/  && bash shutdown.sh
+ps_out=`ps -ef | grep tomcat | grep -v 'grep' `
+result=$(echo $ps_out | grep "tomcat")
+if [[   "$result" != "" ]];then
+    echo "tomcat Running"
+else
+    echo "Tomcat NotRunning"
+fi
+EOF
+
+ssh ${username}@rcpylsapacs001.mpfyieldstar.com<<EOF
+service  scheduler-web stop  
+ps_out=`ps -ef | grep scheduler-web  | grep -v 'scheduler-web' `
+result=$(echo $ps_out | grep "scheduler-web")
+if [[ "$result" == "" ]];then
+    echo "scheduler-web Not Running"
+else
+    echo "scheduler-web Running"
+fi
+EOF
+
+ssh cogadmin@rcpbicog005 <<EOF
+service scheduler-cognos stop
+ps_out=`ps -ef | grep  scheduler-cognos|grep -v 'scheduler-cognos' `
+result=$(echo $ps_out | grep "scheduler-cognos")
+if [[ "$result" == "" ]];then
+    echo "scheduler-cognos Not Running"
+else
+    echo "scheduler-cognos Running"
+fi
+EOF
+
+ssh ${username}@rcpylsapacs001 <<EOF
+/home/rms/aoscripts/scheduler.sh stop SchedulerPROD1
+sleep 1m
+ps_out=`ps -ef | grep   SchedulerPROD1|grep -v 'SchedulerPROD1' `
+result=$(echo $ps_out | grep "SchedulerPROD1")
+if [[ "$result" != "" ]];then
+    echo " SchedulerPROD1 is still Running"
+    #Here i miss one thing that kill java process 
+    #delete scheduler pid form /home/rms/schudler_pids
+    # to get the process idof schedulerprod1"
+    SchedulerPROD1_pid=`ps aux | grep SchedulerPROD1 | grep -v grep | awk '{print $2}'`
+     kill -9 "SchedulerPROD1" 
+else
+    echo "SchedulerPROD1 is not  Running"
+fi
+EOF
+ssh ${username}@rcpylsapacs002 <<EOF
+/home/rms/aoscripts/scheduler.sh stop SchedulerPROD1
+sleep 1m
+ps_out=`ps -ef | grep   SchedulerPROD1|grep -v 'SchedulerPROD2' `
+result=$(echo $ps_out | grep "SchedulerPROD2")
+if [[ "$result" != "" ]];then
+    echo " SchedulerPROD2 is still Running"
+    SchedulerPROD2_pid=`ps aux | grep SchedulerPROD2  | grep -v grep | awk '{print $2}'`
+    kill -9 "SchedulerPROD2"
+else
+    echo "SchedulerPROD2 is not  Running"
+fi
+EOF
+
+echo "DEployment steps start"
+ssh ${username}@${hostnames[0]} <<EOF
+cd  /home/rms/aoscripts 
+FORCE=1 sh aodeploy.sh -m database -e prod
+echo "If you see any error log, please stop here and call one of the Release Product Resource and do not proceed until it resolved"
+echo "Run this command if no errors are displayed for the above step"
+sh aodeploy.sh -b -m “webapp scheduler sitestatus" -e prod
+echo "Run this command if no errors are displayed for the above step "
+FORCE=1 sh aodeploy.sh -d -m “webapp scheduler scheduler-core sitestatus scheduler-web database” -e prod
+ssh ${username}@rcpylsdbacs001 <<EOF  
+cp -R /home/rms/tmp/ysconfig/aodb/scripts  /home/rms/bin
+cp -R /home/rms/tmp/ysconfig/aodb/dashboard /home/rms/cds2/dashboard 
+chmod +x /home/rms/bin/ *.sh 
+EOF
+ssh cogadmin@rcpbicog005 "scp rms@rcdylsapcvs001.mpfyieldstar.com:/home/rms/.release/scheduler-cognos/prod/scheduler-cognos.jar /opt/scheduler-cognos"
+EOF
+#start tomcat
+echo "start tomcat server  on rcpylswwacs001 and rcpylswwacs002"
+
+for  hostname in ${hostname[@]}
+do
+ssh ${username}@${hostnames[0]} <<EOF
+sh /opt/tomcat/bin/startup.sh 
+ps_out=`ps -ef | grep tomcat | grep -v 'grep' `
+result=$(echo $ps_out | grep "tomcat")
+if [[   "$result" != "" ]];then
+    echo "tomcat Running"
+else
+    echo "Tomcat Not Running"
+fi
+done
+EOF
+#Start Scheduler web
+echo "Start Scheduler web"
+ssh rms@rcpylsapacs001 <<EOF
+service scheduler-web start
+#Check to make sure process is running and you should see scheduler-web.pid in /home/rms/scheduler-web folder
+ps_out=`ps -ef | grep scheduler-web | grep -v 'grep' `
+result=$(echo $ps_out | grep "scheduler-web")
+if [[   "$result" != "" ]];then
+    echo "scheduler-web Running"
+else
+    echo "scheduler-web Not Running"
+fi
+EOF
+
+ssh cogadmin@rcpbicog005 <<EOF
+service scheduler-cognos start 
+ps_out=`ps -ef | grep scheduler-cognos | grep -v 'grep' `
+result=$(echo $ps_out | grep "scheduler-cognos")
+if [[   "$result" != "" ]];then
+    echo "scheduler-cognos Running"
+else
+    echo "scheduler-cognos Not Running"
+fi
+EOF
+
+#start schedulers on  rcpylsapacs001 and  rcpylsapacs002
+ssh rms@rcpylsapacs001 <<EOF
+/home/rms/aoscripts/scheduler.sh start SchedulerPROD1
+echo "make sure java process is up and running"
+EOF
+ssh rms@rcpylsapacs002 <<EOF
+/home/rms/aoscripts/scheduler.sh start SchedulerPROD2
+EOF
+echo "confirm deployment is completed"
+
+#start scheduler-core
+echo "we are going to start scheduler-core"
+ssh rms@rcpylsapacs001 <<EOF
+/home/rms/aoscripts/scheduler-core.sh start SchedulerCorePROD1
+EOF
+ssh rms@rcpylsapacs002 <<EOF
+/home/rms/aoscripts/scheduler-core.sh start SchedulerCorePROD2
+EOF
+
+
+#Post Deployment steps
+echo "postDeployment steps"
+ssh ${username}@rcpylsdbacs001  <<EOF
+
+echo "uncommenting for build_ela.sh"
+a=`crontab -l|grep -i "wait.sh"|cut -c 1`
+echo "${a}"
+currentTime=`date +%k%M`
+ls_crontab_enable()
+{
+tempTime=$1
+if [ $tempTime -gt 2100 -a $tempTime -lt 0900 ]
+then
+echo "time condition is right so we enable the cronjob build_ela.sh"
+if [[ ${a} == "*" ]]
+then
+echo "Already uncommented to cronjon build_ela.sh"
+else
+echo "we are going to add the comment to build_ela.sh"
+crontab -l | sed '/^#.*build_ela.sh/s/^#//' | crontab -
+fi
+else
+echo "the crontab is disabled because the deployment is going on  "
+fi
+}
+ls_crontab_enable $currentTime
+EOF

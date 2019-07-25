@@ -1,0 +1,29 @@
+## anisble code deploy
+---
+- hosts: localhost
+  become: yes
+  tasks:
+   - name: shutdown tomcat servers on rcpylswwacs001,rcpylswwacs002
+     command: sh /usr/local/tomcat9/bin/shutdown.sh
+     register: result
+   - debug: msg="{{ result }}"
+   - name: Check if Apache is running
+     shell: ps aux | grep -i tomcat |  awk '{print $2}'
+     ignore_errors: yes
+     changed_when: false
+     register: service_apache_status
+   - debug: msg="Check if Apache is running {{ service_apache_status }}"
+   - debug: msg="service_apache_status.stdout != '' =  {{ service_apache_status.stdout != ''}}"
+
+   - name: restart tomcat server
+     shell: sh /usr/local/tomcat9/bin/startup.sh
+     register: tomcatstart
+   - debug: msg="{{ tomcatstart }}"
+   - name: start the http server
+     service:
+      name: httpd
+      state: started
+     register: startapacheserver 
+   - debug: msg="{{startapacheserver}}"
+   - debug:
+      var: startapacheserver

@@ -1,0 +1,10 @@
+---
+ - hosts: localhost
+   become: yes
+   tasks:
+    - name: call another playbooks defined hostnames
+      copy: 
+       src: /home/ec2-user/rani
+       dest: /home/ec2-user/kishan/
+    - name: change the permission of the files
+      shell: chmod a+x /home/ec2-user/Reports/Testing/anil/*.sh

@@ -1,0 +1,16 @@
+--- 
+- hosts: localhost
+  become: yes
+  tasks:
+   - name: Delete backup directory
+     file:
+      path: /home/rms/ysconfig_backup
+      state: absent
+   - name: create backup directory
+     file:
+      path: /home/rms/ysconfig_backup
+      state: directory
+   - name: backup file
+     copy:
+      src: /home/rms/ysconfig
+      dest: /home/rms/ysconfig_backup

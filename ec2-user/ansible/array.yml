@@ -1,0 +1,16 @@
+---
+- name: test playbook
+  gather_facts: false
+  hosts: localhost
+  tasks:
+    - name: set foo fact to an array
+      set_fact: foo="[ 'one', 'two', 'three' ]"
+    - debug: var=foo
+    - name: add items to foo array fact
+      set_fact: foo="{{foo}} + [ 'four' ]"
+    - debug: var=foo[0]
+    - name: perform conditions here
+      file:
+       path: /home/ec2-user/anil.txt
+       state: touch 
+      when: foo[0] == "one"  

@@ -1,0 +1,14 @@
+---
+ - name: examine the varibales
+   include_vars:
+    file: ./vars.yaml
+    name: anildata
+ - name: display message variable
+   debug:
+    msg: "{{ anildata.secondvar.name }} "
+ - name: create a file using include_vars
+   file:
+    path: "{{ anildata.firstvar.path1 }}"
+    state: directory
+    
+    

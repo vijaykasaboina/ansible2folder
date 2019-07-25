@@ -1,0 +1,9 @@
+---
+ - hosts: localhost
+   tasks:
+    - name: configuer the message
+      copy:
+       content: "welcome to {{item}} linux-ansibleRocks"
+       dest: /home/ec2-user/Aoansible/text
+      with_items: ['CentOS','Ubuntu','RedHat']
+      when: ansible_distribution == item

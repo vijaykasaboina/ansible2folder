@@ -1,0 +1,5 @@
+total 12
+-rw-r--r--. 1 root root 194 May  4 05:28 shell.yaml
+-rw-r--r--. 1 root root  10 May  4 05:36 shell.retry
+-rw-r--r--. 1 root root  15 May  4 05:40 hello.txt
+-rw-r--r--. 1 root root   0 May  4 05:41 tmp.txt

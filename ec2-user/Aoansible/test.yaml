@@ -1,0 +1,16 @@
+---
+- hosts: localhost
+  vars:
+   raju: rani
+  tasks:
+   - name: import vars
+     include_vars:
+      file: ./vars.yaml
+      name: vardata
+   - name: debug
+     debug: 
+      msg: "{{ vardata.firstvar.path1 }} "
+   - name: more debug
+     debug:
+      msg: "{{ vardata.secondvar.id }}"
+   - include: vartest.yaml

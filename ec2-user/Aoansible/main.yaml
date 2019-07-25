@@ -1,0 +1,11 @@
+---
+- hosts: localhost
+  become: yes
+  
+  tasks:
+   - name: create array variable for storing different values 
+     set_fact: modulename="[ 'webapp', 'scheduler', 'scheduler-core', 'scheduler-web', 'sitestatus', 'database']"
+   - debug:
+      msg: " how are you"
+   - include: /home/ec2-user/Aoansible/backup1.yaml 
+     when: '"webapp" in modulename'

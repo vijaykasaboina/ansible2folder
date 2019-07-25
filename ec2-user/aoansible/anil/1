@@ -1,0 +1,16 @@
+---
+- name: Backing up Scheduler to "/home/rms/scheduler_backup"
+  hosts: localhost
+  tasks:
+   file:
+    state: abscent
+    path: /home/ec2-user/aoansible/anil_backup
+   file:
+    state: directory
+    path: /home/ec2-user/aoansible/anil_backup
+   copy:
+    src: /home/ec2-user/aoansible/anil/
+    dest: /home/ec2-user/aoansible/anil_backup
+ 
+
+      

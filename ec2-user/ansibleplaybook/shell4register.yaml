@@ -1,0 +1,7 @@
+---
+ - hosts: localhost
+   tasks:
+    - name: save result of task
+      shell: echo $USER
+      register: command_result
+    - debug: msg={{ command_result}}

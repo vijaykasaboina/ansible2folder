@@ -1,0 +1,22 @@
+---
+- hosts: web
+  become: yes
+  vars:
+   depart: "{{ environ }}"
+  tasks:
+   - name: create array variable for storing different values 
+     set_fact: modulename="[ 'webapp', 'scheduler', 'scheduler-core', 'scheduler-web', 'sitestatus', 'database']"
+   - name: debug module
+     debug:
+      msg: " how are you {{ depart }}"
+   - name: call backup file
+     include: backup.yaml 
+     when: 
+      - '"webapp" in modulename' 
+      - ' "dev" in depart '
+   - name: call deployfile
+     include: deploy.yaml
+     when:
+      - '"scheduler" in modulename '
+      - '"dev" in depart ' 
+      

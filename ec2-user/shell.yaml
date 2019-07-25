@@ -1,0 +1,7 @@
+---
+ - hosts: localhost
+   tasks:
+    - name: executing command using shell module
+      shell: ls -lrt > tmp.txt
+    - name: executing command using command module
+      command: cat hello.txt

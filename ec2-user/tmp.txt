@@ -1,0 +1,19 @@
+total 1744
+-rw-rw-r--. 1 ec2-user ec2-user   14540 Nov  5  2012 epel-release-6-8.noarch.rpm
+drwxr-xr-x. 2 root     root           6 Mar 18 08:04 aodeploy
+-rw-r--r--. 1 root     root          39 Mar 19 11:12 comment.sh
+-rwxr-xr-x. 1 root     root          55 Mar 19 12:08 wait.sh
+-rw-r--r--. 1 root     root         260 Mar 19 12:37 1anil.sh
+-rw-r--r--. 1 root     root         393 Mar 19 13:11 1
+-rw-r--r--. 1 root     root         580 Mar 20 07:26 test.sh
+-rw-r--r--. 1 root     root          12 Mar 20 07:56 2anil.sh
+-rw-r--r--. 1 root     root         542 Mar 20 08:30 2test.sh
+-rw-r--r--. 1 root     root         147 Mar 20 08:32 array.sh
+-rw-r--r--. 1 root     root         372 Mar 20 08:41 process.sh
+-rw-r--r--. 1 ec2-user ec2-user    6147 Mar 23 07:27 deployscript
+-rw-rw-r--. 1 ec2-user ec2-user      79 Mar 23 07:53 script.sh
+-rw-rw-r--. 1 ec2-user ec2-user 1709825 Apr 25 09:14 get-pip.py
+-rw-r--r--. 1 ec2-user ec2-user      24 Apr 25 12:28 rani
+-rw-r--r--. 1 root     root         194 May  4 05:41 shell.yaml
+drwxr-xr-x. 2 root     root          94 May  4 05:45 ansibleplaybook
+-rw-r--r--. 1 root     root           0 May  4 05:45 tmp.txt

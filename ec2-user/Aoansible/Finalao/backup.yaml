@@ -1,0 +1,22 @@
+--- 
+- name: import variables
+  include_vars:
+   file: ./vars.yaml
+   name: Aobackup
+- name: Delete backup directory
+  file:
+   path:  "{{ Aobackup.webapp.path1 }}"
+   state: absent
+- name: create backup directory
+  file:
+   path:  "{{ Aobackup.webapp.path1}}"
+   state: directory
+- name: backup file
+  copy:
+   src: "{{ Aobackup.webapp.path2 }}" 
+   dest:  "{{ Aobackup.webapp.path1 }}"
+- name: date amd time
+  shell: date
+  register: result
+- debug: 
+   msg:" date is{{ result.stdout }} "

@@ -1,0 +1,56 @@
+---
+- name: import varibales
+  include_vars:
+   file: ./vars.yaml
+   name: deploy
+- name: deployments start
+  debug:
+   msg: " deployment start"
+- name: create a release directory
+  file:
+   path: "{{ deploy.webapp.path3 }}"
+   state: directory
+- name: copy file from jenkins server to localpath
+  copy: 
+   src: "{{ deploy.webapp.path3 }}"
+   dest: "{{ deploy.webapp.path3 }}"
+- name: delete temporary directory
+  file:
+   path: "{{ deploy.webapp.path4 }}"
+   state: absent
+- name: created a /tmp directory
+  file:
+   path: "{{ deploy.webapp.path4 }}"
+   state: directory
+- name: unarchive the ysconfig.tar.gz
+  unarchive:
+   src: "{{ deploy.webapp.path3 }}"
+   dest: "{{ deploy.webapp.path4 }}"
+- name: copy file from one folder to another folder
+  copy:
+   src: "{{ deploy.webapp.path3 }}"
+   dest: "{{ deploy.webapp.path4 }}"
+- name: Delete already existing deployment directory
+  file:
+   path: "{{ deploy.webapp.path5 }}"
+   state: absent
+- name: create deployment direcory
+  file:
+   path: "{{ deploy.webapp.path5 }}"
+   state: directory
+- name: copy war file to deployment folder
+  copy:
+   src: "{{ deploy.webapp.path4 }}"
+   dest: "{{ deploy.webapp.path5 }}"
+   
+- name: change the file permission of the file
+  file:
+   path: "{{deploy.webapp.path5}}"
+   owner: ec2-user
+   group: ec2-user
+   mode: 0777
+     
+     
+   
+      
+

@@ -1,0 +1,7 @@
+---
+ - hosts: localhost
+   tasks:
+    - name: executing command using command module
+      command: rm hello.txt
+      register: output
+      failed_when: " 'permission denied' in output.stderr"

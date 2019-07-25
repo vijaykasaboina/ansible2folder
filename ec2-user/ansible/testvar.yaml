@@ -1,0 +1,9 @@
+---
+- hosts: localhost
+  vars:
+   ramu: "{{ rani }}"
+  tasks:
+   - name: disply the name
+     debug:
+      msg: "{{ramu}}"
+
